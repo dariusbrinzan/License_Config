@@ -5,6 +5,8 @@ pipeline {
     }
     environment {
         ANSIBLE_HOSTS_FILE = 'inventory/hosts.yml'
+        AWS_ACCESS_KEY_ID = 'AKIAXYKJWHSHNVBLCUNO'
+        AWS_SECRET_ACCESS_KEY = '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'
     }
     stages {
         stage('Checkout') {
@@ -12,20 +14,27 @@ pipeline {
                 git(
                     url: 'https://github.com/dariusbrinzan/License_Config.git',
                     branch: 'master',
-                    credentialsId: 'd434558d-fa83-4c36-94c3-e5496619e013'
+                    credentialsId: '8ae6862b-0828-40ea-ab30-4c43adc486b4'
                 )
             }
         }
         stage('Terraform Init & Apply/Destroy') {
             steps {
-                script {
-                    // Initialize Terraform
-                    sh('terraform init')
-                    // Apply or Destroy Infrastructure based on parameter
-                    if (params.ACTION == 'apply') {
-                        sh('terraform apply -auto-approve')
-                    } else {
-                        sh('terraform destroy -auto-approve')
+                print(sh('ls -la'))
+                dir ('Terraform') {
+                    script {
+                        print(sh('ls -la'))
+                        print(sh('pwd'))
+                        // Initialize Terraform
+                        // Apply or Destroy Infrastructure based on parameter
+                        if (params.ACTION == 'apply') {
+                            sh('terraform init')
+                            sh('terraform plan')
+                            sh('terraform apply -auto-approve')
+                        } else {
+                            sh('terraform state list')
+                            sh('terraform destroy -auto-approve')
+                        }
                     }
                 }
             }
@@ -37,7 +46,7 @@ pipeline {
             steps {
                 script {
                     // Extract IPs from Terraform output and update Ansible inventory
-                    def ips = sh(script: "terraform output -json instance_ips | jq -r '.[]'", returnStdout: true).trim()
+                    def ips = sh(script: "terraform output -json instance_public_ips | jq -r '.[]'", returnStdout: true).trim()
                     writeFile(file: env.ANSIBLE_HOSTS_FILE, text: """
                         ---
                         all:
@@ -52,8 +61,9 @@ pipeline {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                // Run your Ansible playbooks
-                sh('ansible-playbook -i ${ANSIBLE_HOSTS_FILE} your-playbook.yml')
+                dir ('Ansible') {
+                    sh('ansible-playbook -i ${ANSIBLE_HOSTS_FILE} main_playbook.yml')
+                }
             }
         }
     }
