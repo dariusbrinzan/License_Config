@@ -1,0 +1,5 @@
+---
+- name: Populează și configurează VM-urile
+  hosts: all
+  roles:
+    - populate_vm
