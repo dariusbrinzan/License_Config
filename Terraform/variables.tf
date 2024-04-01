@@ -9,10 +9,11 @@ variable "instance_type" {
 }
 
 variable "ami_id" {
-  description = "ami-0183b16fc359a89dd"
+  description = "AMI ID for the EC2 instance"
+  default = "ami-023adaba598e661ac"
 }
 
 variable "key_name" {
   # default = "/Users/brinzandarius/Downloads/access.pem"
-  default = "access.pem"
+  default = "access"
 }
