@@ -9,19 +9,23 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://your-repo-url.git', branch: 'main'
+                git(
+                    url: 'https://github.com/dariusbrinzan/License_Config.git',
+                    branch: 'master',
+                    credentialsId: 'd434558d-fa83-4c36-94c3-e5496619e013'
+                )
             }
         }
         stage('Terraform Init & Apply/Destroy') {
             steps {
                 script {
                     // Initialize Terraform
-                    sh 'terraform init'
+                    sh('terraform init')
                     // Apply or Destroy Infrastructure based on parameter
                     if (params.ACTION == 'apply') {
-                        sh 'terraform apply -auto-approve'
+                        sh('terraform apply -auto-approve')
                     } else {
-                        sh 'terraform destroy -auto-approve'
+                        sh('terraform destroy -auto-approve')
                     }
                 }
             }
@@ -34,11 +38,12 @@ pipeline {
                 script {
                     // Extract IPs from Terraform output and update Ansible inventory
                     def ips = sh(script: "terraform output -json instance_ips | jq -r '.[]'", returnStdout: true).trim()
-                    writeFile file: env.ANSIBLE_HOSTS_FILE, text: """---
-all:
-  hosts:
-${ips.split('\n').collect { "    ${it}:" }.join('\n')}
-"""
+                    writeFile(file: env.ANSIBLE_HOSTS_FILE, text: """
+                        ---
+                        all:
+                          hosts:
+                        ${ips.split('\n').collect { "    ${it}:" }.join('\n')}
+                        """)
                 }
             }
         }
@@ -48,7 +53,7 @@ ${ips.split('\n').collect { "    ${it}:" }.join('\n')}
             }
             steps {
                 // Run your Ansible playbooks
-                sh 'ansible-playbook -i ${ANSIBLE_HOSTS_FILE} your-playbook.yml'
+                sh('ansible-playbook -i ${ANSIBLE_HOSTS_FILE} your-playbook.yml')
             }
         }
     }
