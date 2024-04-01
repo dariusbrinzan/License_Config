@@ -4,3 +4,4 @@
   roles:
     - populate_vm
     - k8s
+    - app_start
