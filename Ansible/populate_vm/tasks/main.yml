@@ -1,11 +1,36 @@
 ---
 - name: Install Docker
+  become: true
   ansible.builtin.package:
     name: docker
     state: present
 
 - name: Configure K8s using Minikube
+  become: true
   get_url:
     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     dest: /usr/local/bin/minikube
     mode: '0755'
+
+- name: Check Docker
+  command: docker --version
+  register: docker_version_output
+
+- name: Check Docker version
+  debug:
+    msg: "Docker version is: {{ docker_version_output.stdout }}"
+
+- name: Check k8s install
+  command: kubectl version --client
+  register: kubectl_version
+  ignore_errors: yes
+
+- name: Show check k8s
+  debug:
+    msg: "Success! kubectl is installed."
+  when: kubectl_version.rc == 0
+
+- name: Show check k8s
+  fail:
+    msg: "Failed! kubectl is not installed."
+  when: kubectl_version.rc != 0
