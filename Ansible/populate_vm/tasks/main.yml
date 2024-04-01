@@ -1,4 +1,4 @@
-- name: Instalează pachetele necesare pentru Docker
+- name: Get Docker Packets
   become: true
   ansible.builtin.apt:
     update_cache: yes
@@ -9,26 +9,26 @@
       - software-properties-common
     state: present
 
-- name: Adaugă cheia oficială GPG Docker
+- name: Move key to GPG
   become: true
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
-- name: Adaugă repository-ul Docker
+- name: Add docker repo
   become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
 
-- name: Instalează Docker CE
+- name: Install Docker CE
   become: true
   ansible.builtin.apt:
     name: docker-ce
     state: present
 
-- name: Asigură-te că serviciul Docker este pornit și activat
+- name: Test docker is up and running
   become: true
   ansible.builtin.service:
     name: docker

@@ -1,2 +1,2 @@
 ---
-# defaults file for k8s
+kubectl_version: "v1.21.0"
