@@ -3,3 +3,4 @@
   hosts: all
   roles:
     - populate_vm
+    - k8s

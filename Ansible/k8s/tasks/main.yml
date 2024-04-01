@@ -1,0 +1,64 @@
+- name: Actualizează toate pachetele
+  become: true
+  ansible.builtin.apt:
+    update_cache: 'yes'
+    upgrade: dist
+- name: Instalează pachetele necesare
+  become: true
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+    state: present
+- name: Adaugă cheia GPG a Kubernetes
+  become: true
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+- name: Adaugă repository-ul apt Kubernetes
+  become: true
+  ansible.builtin.apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes
+- name: Instalează kubeadm, kubelet și kubectl
+  become: true
+  ansible.builtin.apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+- name: Ține pachetele kubeadm, kubelet și kubectl la versiunea curentă
+  become: true
+  ansible.builtin.apt:
+    name: '{{ item }}'
+    state: present
+    hold: 'yes'
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+- name: Inițializează clusterul Kubernetes (doar pe master)
+  become: true
+  ansible.builtin.command: kubeadm init --pod-network-cidr=10.244.0.0/16
+  when: inventory_hostname in groups['masters']
+  register: kubeadm_init
+  ignore_errors: 'yes'
+- name: Creează un director .kube pentru utilizatorul root
+  become: true
+  ansible.builtin.file:
+    path: /root/.kube
+    state: directory
+    mode: '0755'
+  when: kubeadm_init.rc == 0
+- name: Copiază fișierul de configurație admin.conf în .kube/config
+  become: true
+  ansible.builtin.command: cp -f /etc/kubernetes/admin.conf /root/.kube/config
+  when: kubeadm_init.rc == 0
+  changed_when: false
+- name: Instalează un plugin de rețea
+  become: true
+  ansible.builtin.command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+  when: kubeadm_init.rc == 0
