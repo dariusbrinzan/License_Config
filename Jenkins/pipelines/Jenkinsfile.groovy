@@ -20,13 +20,8 @@ pipeline {
         }
         stage('Terraform Init & Apply/Destroy') {
             steps {
-                print(sh('ls -la'))
-                dir ('Terraform') {
+                dir('Terraform') {
                     script {
-                        print(sh('ls -la'))
-                        print(sh('pwd'))
-                        // Initialize Terraform
-                        // Apply or Destroy Infrastructure based on parameter
                         if (params.ACTION == 'apply') {
                             sh('terraform init')
                             sh('terraform plan')
@@ -39,20 +34,22 @@ pipeline {
                 }
             }
         }
-        stage('Extract IPs and Update Ansible Inventory') {
+         stage('Extract IPs and Update Ansible Inventory') {
             when {
                 expression { params.ACTION == 'apply' }
             }
             steps {
                 script {
-                    // Extract IPs from Terraform output and update Ansible inventory
-                    def ips = sh(script: "terraform output -json instance_public_ips | jq -r '.[]'", returnStdout: true).trim()
-                    writeFile(file: env.ANSIBLE_HOSTS_FILE, text: """
-                        ---
-                        all:
-                          hosts:
-                        ${ips.split('\n').collect { "    ${it}:" }.join('\n')}
-                        """)
+                    dir('Terraform') {
+                        def ips = sh(script: "terraform output -json instance_public_ips | jq -r '.[]'", returnStdout: true).trim()
+                        def servers = ""
+                        ips.tokenize('\n').eachWithIndex { ip, idx ->
+                            servers += "    server${idx + 1}:\n      ansible_host: ${ip}\n"
+                        }
+                        def inventory = "all:\n  hosts:\n${servers}"
+                        print(inventory)
+                        writeFile(file: "../${env.ANSIBLE_HOSTS_FILE}", text: inventory)
+                    }
                 }
             }
         }
@@ -61,8 +58,8 @@ pipeline {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                dir ('Ansible') {
-                    sh('ansible-playbook -i ${ANSIBLE_HOSTS_FILE} main_playbook.yml')
+                dir('Ansible') {
+                    sh('cat ${ANSIBLE_HOSTS_FILE}')
                 }
             }
         }
