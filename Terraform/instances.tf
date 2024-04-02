@@ -6,7 +6,7 @@ resource "aws_instance" "ec2" {
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
 
   root_block_device {
-    volume_size = 15
+    volume_size = 13
   }
 
   tags = {
