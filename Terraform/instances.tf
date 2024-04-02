@@ -1,5 +1,5 @@
 resource "aws_instance" "ec2" {
-  count         = 2
+  count         = 1
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name

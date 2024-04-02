@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "instance_type" {
   description = "Tipul instanței EC2"
-  default     = "t2.micro"
+  default     = "t2.medium"
 }
 
 variable "ami_id" {
