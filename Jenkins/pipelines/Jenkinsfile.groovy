@@ -48,7 +48,12 @@ pipeline {
                         }
                         def inventory = "all:\n  hosts:\n${servers}"
                         print(inventory)
-                        writeFile(file: "../${env.ANSIBLE_HOSTS_FILE}", text: inventory)
+                        print(env.ANSIBLE_HOSTS_FILE)
+                        sh('cat ${ANSIBLE_HOSTS_FILE}')
+                        sh('chmod 777 ../Ansible/inventory/hosts.yml')
+                        writeFile(file: "hosts.yml", text: inventory)
+                        sh('cp hosts.yml ../Ansible/inventory/hosts.yml')
+                        sh('cat ../Ansible/inventory/hosts.yml')
                     }
                 }
             }
@@ -58,8 +63,10 @@ pipeline {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                dir('Ansible') {
-                    sh('cat ${ANSIBLE_HOSTS_FILE}')
+                dir('Ansible/inventory') {
+                    sh('ls -lh')
+                    sh('cat hosts.yml')
+                    sh("ansible-playbook -i hosts.yml main_playbook.yml")
                 }
             }
         }
