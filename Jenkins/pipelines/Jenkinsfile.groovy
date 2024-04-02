@@ -51,6 +51,7 @@ pipeline {
                         print(env.ANSIBLE_HOSTS_FILE)
                         sh('cat ${ANSIBLE_HOSTS_FILE}')
                         sh('chmod 777 ../Ansible/inventory/hosts.yml')
+                        sh('chmod 400 access.pem')
                         writeFile(file: "hosts.yml", text: inventory)
                         sh('cp hosts.yml ../Ansible/inventory/hosts.yml')
                         sh('cat ../Ansible/inventory/hosts.yml')
