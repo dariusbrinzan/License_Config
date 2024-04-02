@@ -63,10 +63,10 @@ pipeline {
                 expression { params.ACTION == 'apply' }
             }
             steps {
-                dir('Ansible/inventory') {
+                dir('Ansible') {
                     sh('ls -lh')
-                    sh('cat hosts.yml')
-                    sh("ansible-playbook -i hosts.yml main_playbook.yml")
+                    sh('cat inventory/hosts.yml')
+                    sh("ansible-playbook -i inventory/hosts.yml main_playbook.yml")
                 }
             }
         }
