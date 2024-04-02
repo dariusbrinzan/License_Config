@@ -2,8 +2,12 @@ resource "aws_instance" "ec2" {
   count         = 2
   ami           = var.ami_id
   instance_type = var.instance_type
-  key_name = var.key_name
+  key_name      = var.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+
+  root_block_device {
+    volume_size = 15
+  }
 
   tags = {
     Name = "Instance ${count.index + 1}"
