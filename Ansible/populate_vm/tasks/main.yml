@@ -95,10 +95,10 @@
   register: minikube_status
   changed_when: false
   failed_when: 
-    - '"host": "Stopped"' in minikube_status.stdout
-    - '"kubelet": "Stopped"' in minikube_status.stdout
-    - '"apiserver": "Stopped"' in minikube_status.stdout
-    - '"kubeconfig": "Misconfigured"' in minikube_status.stdout
+    - "'\"host\": \"Stopped\"' in minikube_status.stdout"
+    - "'\"kubelet\": \"Stopped\"' in minikube_status.stdout"
+    - "'\"apiserver\": \"Stopped\"' in minikube_status.stdout"
+    - "'\"kubeconfig\": \"Misconfigured\"' in minikube_status.stdout"
 
 - name: Afișează statusul Minikube
   ansible.builtin.debug:
