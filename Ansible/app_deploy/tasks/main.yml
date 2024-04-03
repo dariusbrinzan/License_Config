@@ -63,7 +63,7 @@
 - name: Desfășurarea Next.js Deployment în Kubernetes
   k8s:
     state: present
-    src: "../../../K8s/app-deployment.yaml"
+    src: "../../../K8s/deployment.yaml"
 
 - name: Desfășurarea Next.js Service în Kubernetes
   k8s:

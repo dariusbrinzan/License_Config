@@ -34,3 +34,15 @@
     name: docker
     state: started
     enabled: yes
+
+- name: Asigură-te că pip este instalat
+  become: true
+  package:
+    name: python3-pip
+    state: present
+
+- name: Instalează biblioteca Kubernetes pentru Python
+  become: yes
+  pip:
+    name: kubernetes
+    executable: pip3
