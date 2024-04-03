@@ -6,3 +6,23 @@
     version: '{{ nextjs_repo_branch }}'
     clone: yes
     update: yes
+
+- name: Construiește imaginea Docker din Dockerfile
+  docker_image:
+    build:
+      path: "./Licenta"
+    name: nextjs_license
+    tag: "latest"
+
+- name: Verifică dacă imaginea Docker a fost creată
+  shell: docker images -q nume_imagine_nextjs:latest
+  register: docker_image_check
+  failed_when: docker_image_check.stdout == ""
+
+- name: Rulează containerul Docker din imaginea construită
+  docker_container:
+    name: container_nextjs
+    image: nextjs_license:latest
+    state: started
+    ports:
+      - "3000:3000"
