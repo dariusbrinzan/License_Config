@@ -36,22 +36,26 @@
     enabled: yes
 
 - name: Instalează dependențele Minikube
+  become: true
   apt:
     name:
       - conntrack
 
 - name: Descarcă Minikube
+  become: true
   get_url:
     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     dest: /usr/local/bin/minikube
     mode: '0755'
 
 - name: Asigură permisiuni de execuție pentru Minikube
+  become: true
   file:
     path: /usr/local/bin/minikube
     mode: '0755'
 
 - name: Inițiază Minikube
+  become: true
   command: minikube start --vm-driver=none
   environment:
     MINIKUBE_WANTUPDATENOTIFICATION: "false"
@@ -61,10 +65,12 @@
     KUBECONFIG: /home/ubuntu/.kube/config
 
 - name: Verifică starea Minikube
+  become: true
   command: minikube status
   register: minikube_status
   changed_when: false
 
 - name: Afișează starea Minikube
+  become: true
   debug:
     var: minikube_status.stdout
