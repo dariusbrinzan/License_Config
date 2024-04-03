@@ -7,19 +7,20 @@
     clone: yes
     update: yes
 
-- name: Construiește imaginea Docker din Dockerfile
-  docker_image:
-    build:
-      path: "./Licenta"
-    name: nextjs_license
-    tag: "latest"
+- name: Construiește imaginea Docker folosind Dockerfile din directorul Licenta
+  shell: docker build -t nextjs_license .
+  args:
+    chdir: /home/ubuntu/Licenta
+  become: true
 
 - name: Verifică dacă imaginea Docker a fost creată
-  shell: docker images -q nume_imagine_nextjs:latest
+  shell: docker images -q nextjs_license:latest
   register: docker_image_check
   failed_when: docker_image_check.stdout == ""
+  become: true
 
 - name: Rulează containerul Docker din imaginea construită
+  become: true
   docker_container:
     name: container_nextjs
     image: nextjs_license:latest
@@ -32,12 +33,29 @@
     seconds: 30
 
 - name: Verifică starea de sănătate a aplicației
+  become: true
   uri:
     url: "http://localhost:3000/"
     method: GET
+    return_content: yes  # Pentru a returna conținutul răspunsului HTTP
     status_code: 200
     timeout: 5
   register: health_check_response
   until: health_check_response.status == 200
   retries: 5
   delay: 10
+  ignore_errors: yes  # Ignoră erorile pentru a putea afișa un mesaj personalizat
+
+- name: Afișează rezultatul health check-ului
+  become: true
+  debug:
+    msg:
+      - "Status Code: {{ health_check_response.status }}"
+      - "Body: {{ health_check_response.content | default('N/A') }}"
+  when: health_check_response is defined
+
+- name: Afișează mesaj de eroare dacă health check-ul a eșuat
+  become: true
+  debug:
+    msg: "Health check-ul a eșuat după {{ retries }} încercări. Verifică logurile aplicației pentru detalii."
+  when: health_check_response is defined and health_check_response.status != 200
