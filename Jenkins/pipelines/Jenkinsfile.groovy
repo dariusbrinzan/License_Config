@@ -34,7 +34,7 @@ pipeline {
                 }
             }
         }
-        stage('Extract IPs and Update Ansible Inventory') {
+         stage('Extract IPs and Update Ansible Inventory') {
             when {
                 expression { params.ACTION == 'apply' }
             }
@@ -47,7 +47,14 @@ pipeline {
                             servers += "    server${idx + 1}:\n      ansible_host: ${ip}\n"
                         }
                         def inventory = "all:\n  hosts:\n${servers}"
-                        writeFile(file: "${env.ANSIBLE_HOSTS_FILE}", text: inventory)
+                        print(inventory)
+                        print(env.ANSIBLE_HOSTS_FILE)
+                        sh('cat ${ANSIBLE_HOSTS_FILE}')
+                        sh('chmod 777 ../Ansible/inventory/hosts.yml')
+                        sh('chmod 400 access.pem')
+                        writeFile(file: "hosts.yml", text: inventory)
+                        sh('cp hosts.yml ../Ansible/inventory/hosts.yml')
+                        sh('cat ../Ansible/inventory/hosts.yml')
                     }
                 }
             }
@@ -69,7 +76,9 @@ pipeline {
             }
             steps {
                 dir('Ansible') {
-                    sh("ansible-playbook -i ${env.ANSIBLE_HOSTS_FILE} main_playbook.yml")
+                    sh('ls -lh')
+                    sh('cat inventory/hosts.yml')
+                    sh("ansible-playbook -i inventory/hosts.yml main_playbook.yml")
                 }
             }
         }
