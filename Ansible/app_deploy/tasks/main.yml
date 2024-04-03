@@ -1,0 +1,9 @@
+---
+- name: Clonează repositoriul NextJS de pe un branch specific
+  git:
+    repo: 'https://{{ github_username }}:{{ github_token }}@github.com/dariusbrinzan/Licenta.git'
+    dest: '/home/ubuntu/Licenta'
+    version: '{{ nextjs_repo_branch }}'
+    clone: yes
+    update: yes
+  no_log: true
