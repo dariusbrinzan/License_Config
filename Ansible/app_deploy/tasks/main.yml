@@ -6,4 +6,3 @@
     version: '{{ nextjs_repo_branch }}'
     clone: yes
     update: yes
-  no_log: true
