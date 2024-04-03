@@ -35,16 +35,14 @@
     state: started
     enabled: yes
 
-- name: Instalează crictl
+- name: Descarcă crictl
   become: yes
-  block:
-    - name: Descarcă crictl
-      get_url:
-        url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ CRICTL_VERSION }}/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
-        dest: "/tmp/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
-        mode: '0664'
-      vars:
-        CRICTL_VERSION: "1.25.0"
+  get_url:
+    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ CRICTL_VERSION }}/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
+    dest: "/tmp/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
+    mode: '0664'
+  vars:
+    CRICTL_VERSION: "1.25.0"
 
 - name: Extrage crictl din arhivă
   become: yes
