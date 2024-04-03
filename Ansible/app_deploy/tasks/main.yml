@@ -7,11 +7,17 @@
     clone: yes
     update: yes
 
+- name: Verifică dacă imaginea Docker există
+  shell: docker images -q nextjs_license:latest
+  register: docker_image_check
+  become: true
+
 - name: Construiește imaginea Docker folosind Dockerfile din directorul Licenta
   shell: docker build -t nextjs_license .
   args:
     chdir: /home/ubuntu/Licenta
   become: true
+  when: docker_image_check.stdout == ""
 
 - name: Verifică dacă imaginea Docker a fost creată
   shell: docker images -q nextjs_license:latest
