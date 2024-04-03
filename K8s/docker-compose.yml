@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  nextjs-app1:
+    image: nextjs_license:latest
+    ports:
+      - "3001:3000"
+
+  nextjs-app2:
+    image: nextjs_license:latest
+    ports:
+      - "3002:3000"
