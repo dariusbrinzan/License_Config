@@ -7,6 +7,7 @@
       - ca-certificates
       - curl
       - software-properties-common
+      - conntrack
     state: present
 
 - name: Move key to GPG
@@ -35,71 +36,43 @@
     state: started
     enabled: yes
 
-- name: Descarcă crictl
-  become: yes
-  get_url:
-    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ CRICTL_VERSION }}/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
-    dest: "/tmp/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
-    mode: '0664'
-  vars:
-    CRICTL_VERSION: "1.25.0"
-
-- name: Extrage crictl din arhivă
-  become: yes
-  unarchive:
-    src: "/tmp/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
-    dest: "/usr/local/bin"
-    remote_src: yes
-    extra_opts: [--strip-components=1]
-    creates: "/usr/local/bin/crictl"
-
-- name: Verifică versiunea crictl
-  become: yes
-  command: crictl --version
-  register: crictl_version
-  changed_when: false
-
-- name: Afișează versiunea crictl
-  become: yes
-  debug:
-    var: crictl_version.stdout
-
-- name: Instalează dependențele Minikube
+- name: Actualizează lista de pachete și instalează dependențele necesare
   become: true
-  apt:
+  ansible.builtin.apt:
+    update_cache: yes
     name:
-      - conntrack
+      - apt-transport-https
+      - curl
+    state: present
 
 - name: Descarcă Minikube
   become: true
-  get_url:
+  ansible.builtin.get_url:
     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     dest: /usr/local/bin/minikube
     mode: '0755'
 
 - name: Asigură permisiuni de execuție pentru Minikube
   become: true
-  file:
+  ansible.builtin.file:
     path: /usr/local/bin/minikube
     mode: '0755'
 
-- name: Inițiază Minikube
+- name: Descarcă kubectl
   become: true
-  command: minikube start --vm-driver=none
-  environment:
-    MINIKUBE_WANTUPDATENOTIFICATION: "false"
-    MINIKUBE_WANTREPORTERRORPROMPT: "false"
-    MINIKUBE_HOME: /home/ubuntu
-    CHANGE_MINIKUBE_NONE_USER: "true"
-    KUBECONFIG: /home/ubuntu/.kube/config
+  ansible.builtin.get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: '0755'
 
-- name: Verifică starea Minikube
+- name: Asigură permisiuni de execuție pentru kubectl
   become: true
-  command: minikube status
-  register: minikube_status
-  changed_when: false
+  ansible.builtin.file:
+    path: /usr/local/bin/kubectl
+    mode: '0755'
 
-- name: Afișează starea Minikube
+- name: Pornește Minikube
   become: true
-  debug:
-    var: minikube_status.stdout
+  ansible.builtin.command:
+    cmd: minikube start --driver=docker
+  ignore_errors: yes

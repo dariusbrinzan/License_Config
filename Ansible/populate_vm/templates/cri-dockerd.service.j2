@@ -1,0 +1,10 @@
+[Unit]
+Description=CRI Docker Daemon
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/local/bin/cri-dockerd
+
+[Install]
+WantedBy=multi-user.target
