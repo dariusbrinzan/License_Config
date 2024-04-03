@@ -26,3 +26,18 @@
     state: started
     ports:
       - "3000:3000"
+
+- name: Așteaptă 30 de secunde înainte de health check
+  pause:
+    seconds: 30
+
+- name: Verifică starea de sănătate a aplicației
+  uri:
+    url: "http://localhost:3000/"
+    method: GET
+    status_code: 200
+    timeout: 5
+  register: health_check_response
+  until: health_check_response.status == 200
+  retries: 5
+  delay: 10
