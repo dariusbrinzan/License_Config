@@ -35,6 +35,37 @@
     state: started
     enabled: yes
 
+- name: Instalează crictl
+  become: yes
+  block:
+    - name: Descarcă crictl
+      get_url:
+        url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ CRICTL_VERSION }}/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
+        dest: "/tmp/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
+        mode: '0664'
+      vars:
+        CRICTL_VERSION: "1.25.0"
+
+- name: Extrage crictl din arhivă
+  become: yes
+  unarchive:
+    src: "/tmp/crictl-v{{ CRICTL_VERSION }}-linux-amd64.tar.gz"
+    dest: "/usr/local/bin"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+    creates: "/usr/local/bin/crictl"
+
+- name: Verifică versiunea crictl
+  become: yes
+  command: crictl --version
+  register: crictl_version
+  changed_when: false
+
+- name: Afișează versiunea crictl
+  become: yes
+  debug:
+    var: crictl_version.stdout
+
 - name: Instalează dependențele Minikube
   become: true
   apt:
