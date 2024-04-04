@@ -77,12 +77,15 @@
   debug:
     var: crictl_version.stdout
 
-- name: Instalează Go
+- name: Instalează Go și Make
   become: true
   ansible.builtin.apt:
-    name: golang-go
+    name:
+      - golang-go
+      - make
     state: present
     update_cache: yes
+
 
 - name: Clonează repositoriul cri-dockerd
   git:
