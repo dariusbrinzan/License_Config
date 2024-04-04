@@ -34,12 +34,14 @@
   become: true
 
 - name: Instalează Docker Compose
+  become: true
   ansible.builtin.get_url:
     url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
     dest: /usr/local/bin/docker-compose
     mode: '0755'
 
 - name: Rulează Docker Compose
+  become: true
   ansible.builtin.docker_compose:
     project_src: /home/ubuntu/Config/K8s/docker-compose.yml
     state: present
