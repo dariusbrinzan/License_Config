@@ -7,59 +7,93 @@
       - curl
     state: present
 
+- name: Actualizează lista de pachete
+  apt:
+    update_cache: yes
+
+- name: Instalează kubectl
+  apt:
+    name: kubectl
+    state: present
+  # Notă: Este posibil să fie necesar să adaugi repository-ul Kubernetes înainte de a instala kubectl, 
+  # dar în multe cazuri kubectl poate fi instalat direct pe Ubuntu fără a adăuga un repository extern.
+
+- name: Instalează Docker
+  apt:
+    name: docker.io
+    state: present
+
+- name: Instalează conntrack
+  apt:
+    name: conntrack
+    state: present
+
 - name: Descarcă Minikube
-  become: true
-  ansible.builtin.get_url:
+  get_url:
     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     dest: /usr/local/bin/minikube
     mode: '0755'
 
 - name: Asigură permisiuni de execuție pentru Minikube
-  become: true
-  ansible.builtin.file:
+  file:
     path: /usr/local/bin/minikube
     mode: '0755'
 
-- name: Obține ultima versiune stabilă a kubectl
-  become: true
-  ansible.builtin.shell:
-    cmd: curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
-  register: kubectl_version
-  changed_when: false
+- name: Pornește Minikube folosind driver-ul none
+  command: minikube start --driver=none
+# - name: Descarcă Minikube
+#   become: true
+#   ansible.builtin.get_url:
+#     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+#     dest: /usr/local/bin/minikube
+#     mode: '0755'
 
-- name: Afișează versiunea kubectl obținută
-  ansible.builtin.debug:
-    var: kubectl_version.stdout
+# - name: Asigură permisiuni de execuție pentru Minikube
+#   become: true
+#   ansible.builtin.file:
+#     path: /usr/local/bin/minikube
+#     mode: '0755'
 
-- name: Descarcă kubectl folosind versiunea obținută
-  become: true
-  ansible.builtin.get_url:
-    url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version.stdout }}/bin/linux/amd64/kubectl"
-    dest: "/usr/local/bin/kubectl"
-    mode: '0755'
+# - name: Obține ultima versiune stabilă a kubectl
+#   become: true
+#   ansible.builtin.shell:
+#     cmd: curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
+#   register: kubectl_version
+#   changed_when: false
 
-- name: Asigură permisiuni de execuție pentru kubectl
-  become: true
-  ansible.builtin.file:
-    path: /usr/local/bin/kubectl
-    mode: '0755'
+# - name: Afișează versiunea kubectl obținută
+#   ansible.builtin.debug:
+#     var: kubectl_version.stdout
 
-- name: Adaugă utilizatorul curent în grupul docker și execută newgrp
-  ansible.builtin.shell: |
-    usermod -aG docker "{{ ansible_env.SUDO_USER | default(ansible_env.USER) }}" && newgrp docker
-  become: true
+# - name: Descarcă kubectl folosind versiunea obținută
+#   become: true
+#   ansible.builtin.get_url:
+#     url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version.stdout }}/bin/linux/amd64/kubectl"
+#     dest: "/usr/local/bin/kubectl"
+#     mode: '0755'
 
-- name: Pornește Minikube
-  ansible.builtin.command:
-    cmd: minikube start --driver=docker
-  ignore_errors: yes
+# - name: Asigură permisiuni de execuție pentru kubectl
+#   become: true
+#   ansible.builtin.file:
+#     path: /usr/local/bin/kubectl
+#     mode: '0755'
 
-- name: Verifică statusul Minikube
-  become: true
-  ansible.builtin.command:
-    cmd: minikube status --output=json
-  register: minikube_status
+# - name: Adaugă utilizatorul curent în grupul docker și execută newgrp
+#   ansible.builtin.shell: |
+#     usermod -aG docker "{{ ansible_env.SUDO_USER | default(ansible_env.USER) }}" && newgrp docker
+#   become: true
 
-- name: Afișează statusul Minikube
-  ansible.builtin.debug:
-    var: minikube_status.stdout
+# - name: Pornește Minikube
+#   ansible.builtin.command:
+#     cmd: minikube start --driver=docker
+#   ignore_errors: yes
+
+# - name: Verifică statusul Minikube
+#   become: true
+#   ansible.builtin.command:
+#     cmd: minikube status --output=json
+#   register: minikube_status
+
+# - name: Afișează statusul Minikube
+#   ansible.builtin.debug:
+#     var: minikube_status.stdout
