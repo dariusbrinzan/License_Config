@@ -20,7 +20,6 @@
     minikube start
     eval $(minikube -p minikube docker-env)
   become: true
-  delegate_to: localhost
 
 - name: Verifică statusul Minikube
   become: true
