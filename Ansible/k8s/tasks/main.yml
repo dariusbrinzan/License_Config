@@ -8,10 +8,12 @@
     state: present
 
 - name: Actualizează lista de pachete
+  become: true
   apt:
     update_cache: yes
 
 - name: Instalează kubectl
+  become: true
   apt:
     name: kubectl
     state: present
@@ -19,27 +21,32 @@
   # dar în multe cazuri kubectl poate fi instalat direct pe Ubuntu fără a adăuga un repository extern.
 
 - name: Instalează Docker
+  become: true
   apt:
     name: docker.io
     state: present
 
 - name: Instalează conntrack
+  become: true
   apt:
     name: conntrack
     state: present
 
 - name: Descarcă Minikube
+  become: true
   get_url:
     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     dest: /usr/local/bin/minikube
     mode: '0755'
 
 - name: Asigură permisiuni de execuție pentru Minikube
+  become: true
   file:
     path: /usr/local/bin/minikube
     mode: '0755'
 
 - name: Pornește Minikube folosind driver-ul none
+  become: true
   command: minikube start --driver=none
 # - name: Descarcă Minikube
 #   become: true
