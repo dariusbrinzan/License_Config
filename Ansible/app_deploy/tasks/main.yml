@@ -59,6 +59,18 @@
     name: docker-compose
     state: present
 
+- name: Actualizează biblioteca Docker pentru Python
+  become: true
+  ansible.builtin.pip:
+    name: docker
+    state: latest
+
+- name: Actualizează Docker Compose cu pip
+  become: true
+  ansible.builtin.pip:
+    name: docker-compose
+    state: latest
+
 - name: Rulează Docker Compose
   become: true
   community.docker.docker_compose:
