@@ -49,23 +49,9 @@
     path: /usr/local/bin/kubectl
     mode: '0755'
 
-- name: Instalează kubectl
-  become: true
-  apt:
-    name: kubectl
-    state: present
-  # Notă: Este posibil să fie necesar să adaugi repository-ul Kubernetes înainte de a instala kubectl, 
-  # dar în multe cazuri kubectl poate fi instalat direct pe Ubuntu fără a adăuga un repository extern.
-
-- name: Instalează Docker
-  become: true
-  apt:
-    name: docker.io
-    state: present
-
 - name: Instalează conntrack
   become: true
-  apt:
+  ansible.builtin.apt:
     name: conntrack
     state: present
 
