@@ -77,6 +77,43 @@
   debug:
     var: crictl_version.stdout
 
+- name: Instalează Go
+  become: true
+  ansible.builtin.apt:
+    name: golang-go
+    state: present
+    update_cache: yes
+
+- name: Clonează repositoriul cri-dockerd
+  git:
+    repo: 'https://github.com/Mirantis/cri-dockerd.git'
+    dest: '/tmp/cri-dockerd'
+    version: 'master'  # Poți specifica o etichetă/tag specific dacă preferi o versiune stabilă
+
+- name: Compilează cri-dockerd din sursă
+  become: true
+  ansible.builtin.shell:
+    chdir: '/tmp/cri-dockerd'
+    cmd: |
+      make
+  environment:
+    GOPATH: "{{ ansible_env.HOME }}/go"
+
+- name: Instalează cri-dockerd
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      make install
+    chdir: '/tmp/cri-dockerd'
+
+- name: Asigură că daemon-ul cri-dockerd este pornit
+  become: true
+  ansible.builtin.systemd:
+    name: cri-docker.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
 - name: Pornește Minikube folosind driver-ul none
   become: true
   command: minikube start --driver=none
