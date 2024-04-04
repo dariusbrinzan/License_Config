@@ -55,6 +55,31 @@
     name: conntrack
     state: present
 
+- name: Descarcă crictl
+  become: true
+  get_url:
+    url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.24.0/crictl-v1.24.0-linux-amd64.tar.gz
+    dest: "/tmp/crictl-v1.24.0-linux-amd64.tar.gz"
+    mode: '0644'
+
+- name: Extrage arhiva crictl
+  become: true
+  unarchive:
+    src: "/tmp/crictl-v1.24.0-linux-amd64.tar.gz"
+    dest: "/usr/local/bin"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+    creates: "/usr/local/bin/crictl"
+
+- name: Verifică versiunea crictl instalată
+  become: true
+  command: crictl --version
+  register: crictl_version
+
+- name: Afișează versiunea crictl
+  debug:
+    var: crictl_version.stdout
+
 - name: Pornește Minikube folosind driver-ul none
   become: true
   command: minikube start --driver=none
