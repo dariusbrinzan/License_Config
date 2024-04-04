@@ -53,6 +53,12 @@
     dest: /usr/local/bin/docker-compose
     mode: '0755'
 
+- name: Instalează Docker Compose cu pip
+  become: true
+  ansible.builtin.pip:
+    name: docker-compose
+    state: present
+
 - name: Rulează Docker Compose
   become: true
   ansible.builtin.docker_compose:
