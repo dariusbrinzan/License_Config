@@ -7,7 +7,7 @@
     clone: yes
     update: yes
 
-- name: Clonează repositoriul NextJS de pe un branch specific
+- name: Clonează repositoriul NextJS Config de pe un branch specific
   git:
     repo: 'https://{{ github_username }}:{{ github_token }}@github.com/dariusbrinzan/License_Config.git'
     dest: '/home/ubuntu/Config'
