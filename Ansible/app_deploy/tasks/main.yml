@@ -15,6 +15,23 @@
     clone: yes
     update: yes
 
+- name: Setează Minikube să folosească Docker daemon-ul local
+  ansible.builtin.shell: |
+    minikube start
+    eval $(minikube -p minikube docker-env)
+  become: true
+  delegate_to: localhost
+
+- name: Verifică statusul Minikube
+  become: true
+  ansible.builtin.command:
+    cmd: minikube status --output=json
+  register: minikube_status
+
+- name: Afișează statusul Minikube
+  ansible.builtin.debug:
+    var: minikube_status.stdout
+
 - name: Verifică dacă imaginea Docker există
   shell: docker images -q nextjs_license:latest
   register: docker_image_check
