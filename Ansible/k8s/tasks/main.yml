@@ -44,10 +44,15 @@
     path: /usr/local/bin/kubectl
     mode: '0755'
 
+- name: Adaugă utilizatorul curent în grupul docker și schimbă grupul
+  ansible.builtin.shell: |
+    usermod -aG docker $USER && newgrp docker
+  become: true
+
 - name: Pornește Minikube
   become: true
   ansible.builtin.command:
-    cmd: minikube start --driver=docker --force
+    cmd: minikube start --driver=docker
   ignore_errors: yes
 
 - name: Verifică statusul Minikube
