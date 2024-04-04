@@ -62,14 +62,11 @@
     dest: "/tmp/crictl-v1.24.0-linux-amd64.tar.gz"
     mode: '0644'
 
-- name: Extrage arhiva crictl
+- name: Extrage crictl în /usr/local/bin
   become: true
-  unarchive:
-    src: "/tmp/crictl-v1.24.0-linux-amd64.tar.gz"
-    dest: "/usr/local/bin"
-    remote_src: yes
-    extra_opts: [--strip-components=1]
-    creates: "/usr/local/bin/crictl"
+  ansible.builtin.shell:
+    cmd: tar -xzf /tmp/crictl-v1.24.0-linux-amd64.tar.gz -C /usr/local/bin
+    creates: /usr/local/bin/crictl
 
 - name: Verifică versiunea crictl instalată
   become: true
