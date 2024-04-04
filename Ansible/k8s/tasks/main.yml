@@ -43,3 +43,19 @@
   ansible.builtin.file:
     path: /usr/local/bin/kubectl
     mode: '0755'
+
+- name: Pornește Minikube
+  become: true
+  ansible.builtin.command:
+    cmd: minikube start --driver=docker --force
+  ignore_errors: yes
+
+- name: Verifică statusul Minikube
+  become: true
+  ansible.builtin.command:
+    cmd: minikube status --output=json
+  register: minikube_status
+
+- name: Afișează statusul Minikube
+  ansible.builtin.debug:
+    var: minikube_status.stdout

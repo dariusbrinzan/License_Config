@@ -7,28 +7,13 @@
     clone: yes
     update: yes
 
-- name: Clonează repositoriul NextJS Config de pe un branch specific
+- name: Clonează repositoriul NextJS config de pe un branch specific
   git:
     repo: 'https://{{ github_username }}:{{ github_token }}@github.com/dariusbrinzan/License_Config.git'
     dest: '/home/ubuntu/Config'
     version: '{{ config_repo_branch }}'
     clone: yes
     update: yes
-
-- name: Setează Minikube să folosească Docker daemon-ul local
-  ansible.builtin.shell: |
-    minikube start
-    eval $(minikube -p minikube docker-env)
-
-- name: Verifică statusul Minikube
-  become: true
-  ansible.builtin.command:
-    cmd: minikube status --output=json
-  register: minikube_status
-
-- name: Afișează statusul Minikube
-  ansible.builtin.debug:
-    var: minikube_status.stdout
 
 - name: Verifică dacă imaginea Docker există
   shell: docker images -q nextjs_license:latest
