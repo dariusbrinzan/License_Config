@@ -19,7 +19,6 @@
   ansible.builtin.shell: |
     minikube start
     eval $(minikube -p minikube docker-env)
-  become: true
 
 - name: Verifică statusul Minikube
   become: true
