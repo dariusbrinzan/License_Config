@@ -50,7 +50,6 @@
   become: true
 
 - name: Pornește Minikube
-  become: true
   ansible.builtin.command:
     cmd: minikube start --driver=docker
   ignore_errors: yes
