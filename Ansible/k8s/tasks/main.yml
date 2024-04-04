@@ -12,131 +12,111 @@
   apt:
     update_cache: yes
 
-- name: Descarcă Minikube
-  become: true
-  ansible.builtin.get_url:
-    url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-    dest: /usr/local/bin/minikube
-    mode: '0755'
-
-- name: Asigură permisiuni de execuție pentru Minikube
-  become: true
-  ansible.builtin.file:
-    path: /usr/local/bin/minikube
-    mode: '0755'
-
-- name: Obține ultima versiune stabilă a kubectl
-  become: true
-  ansible.builtin.shell:
-    cmd: curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
-  register: kubectl_version
-  changed_when: false
-
-- name: Afișează versiunea kubectl obținută
-  ansible.builtin.debug:
-    var: kubectl_version.stdout
-
-- name: Descarcă kubectl folosind versiunea obținută
-  become: true
-  ansible.builtin.get_url:
-    url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version.stdout }}/bin/linux/amd64/kubectl"
-    dest: "/usr/local/bin/kubectl"
-    mode: '0755'
-
-- name: Asigură permisiuni de execuție pentru kubectl
-  become: true
-  ansible.builtin.file:
-    path: /usr/local/bin/kubectl
-    mode: '0755'
-
-- name: Instalează conntrack
-  become: true
-  ansible.builtin.apt:
-    name: conntrack
-    state: present
-
-- name: Descarcă crictl
-  become: true
-  get_url:
-    url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.24.0/crictl-v1.24.0-linux-amd64.tar.gz
-    dest: "/tmp/crictl-v1.24.0-linux-amd64.tar.gz"
-    mode: '0644'
-
-- name: Extrage crictl în /usr/local/bin
-  become: true
-  ansible.builtin.shell:
-    cmd: tar -xzf /tmp/crictl-v1.24.0-linux-amd64.tar.gz -C /usr/local/bin
-    creates: /usr/local/bin/crictl
-
-- name: Verifică versiunea crictl instalată
-  become: true
-  command: crictl --version
-  register: crictl_version
-
-- name: Afișează versiunea crictl
-  debug:
-    var: crictl_version.stdout
-
-- name: Instalează Go și Make
-  become: true
-  ansible.builtin.apt:
-    name:
-      - golang-go
-      - make
-    state: present
-    update_cache: yes
-
-
-- name: Clonează repositoriul cri-dockerd
-  git:
-    repo: 'https://github.com/Mirantis/cri-dockerd.git'
-    dest: '/tmp/cri-dockerd'
-    version: 'master'  # Poți specifica o etichetă/tag specific dacă preferi o versiune stabilă
-
-- name: Compilează cri-dockerd din sursă
-  become: true
-  ansible.builtin.shell:
-    chdir: '/tmp/cri-dockerd'
-    cmd: |
-      make
-  environment:
-    GOPATH: "{{ ansible_env.HOME }}/go"
-
-- name: Instalează cri-dockerd
-  become: true
-  ansible.builtin.shell:
-    cmd: |
-      make install
-    chdir: '/tmp/cri-dockerd'
-
-- name: Asigură că daemon-ul cri-dockerd este pornit
-  become: true
-  ansible.builtin.systemd:
-    name: cri-docker.service
-    state: started
-    enabled: yes
-    daemon_reload: yes
-
-- name: Pornește Minikube folosind driver-ul none
-  become: true
-  command: minikube start --driver=none
-
-# - name: Adaugă utilizatorul curent în grupul docker și execută newgrp
-#   ansible.builtin.shell: |
-#     usermod -aG docker "{{ ansible_env.SUDO_USER | default(ansible_env.USER) }}" && newgrp docker
+# - name: Descarcă Minikube
 #   become: true
+#   ansible.builtin.get_url:
+#     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+#     dest: /usr/local/bin/minikube
+#     mode: '0755'
 
-# - name: Pornește Minikube
-#   ansible.builtin.command:
-#     cmd: minikube start --driver=docker
-#   ignore_errors: yes
-
-# - name: Verifică statusul Minikube
+# - name: Asigură permisiuni de execuție pentru Minikube
 #   become: true
-#   ansible.builtin.command:
-#     cmd: minikube status --output=json
-#   register: minikube_status
+#   ansible.builtin.file:
+#     path: /usr/local/bin/minikube
+#     mode: '0755'
 
-# - name: Afișează statusul Minikube
+# - name: Obține ultima versiune stabilă a kubectl
+#   become: true
+#   ansible.builtin.shell:
+#     cmd: curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
+#   register: kubectl_version
+#   changed_when: false
+
+# - name: Afișează versiunea kubectl obținută
 #   ansible.builtin.debug:
-#     var: minikube_status.stdout
+#     var: kubectl_version.stdout
+
+# - name: Descarcă kubectl folosind versiunea obținută
+#   become: true
+#   ansible.builtin.get_url:
+#     url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version.stdout }}/bin/linux/amd64/kubectl"
+#     dest: "/usr/local/bin/kubectl"
+#     mode: '0755'
+
+# - name: Asigură permisiuni de execuție pentru kubectl
+#   become: true
+#   ansible.builtin.file:
+#     path: /usr/local/bin/kubectl
+#     mode: '0755'
+
+# - name: Instalează conntrack
+#   become: true
+#   ansible.builtin.apt:
+#     name: conntrack
+#     state: present
+
+# - name: Descarcă crictl
+#   become: true
+#   get_url:
+#     url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.24.0/crictl-v1.24.0-linux-amd64.tar.gz
+#     dest: "/tmp/crictl-v1.24.0-linux-amd64.tar.gz"
+#     mode: '0644'
+
+# - name: Extrage crictl în /usr/local/bin
+#   become: true
+#   ansible.builtin.shell:
+#     cmd: tar -xzf /tmp/crictl-v1.24.0-linux-amd64.tar.gz -C /usr/local/bin
+#     creates: /usr/local/bin/crictl
+
+# - name: Verifică versiunea crictl instalată
+#   become: true
+#   command: crictl --version
+#   register: crictl_version
+
+# - name: Afișează versiunea crictl
+#   debug:
+#     var: crictl_version.stdout
+
+# - name: Instalează Go și Make
+#   become: true
+#   ansible.builtin.apt:
+#     name:
+#       - golang-go
+#       - make
+#     state: present
+#     update_cache: yes
+
+
+# - name: Clonează repositoriul cri-dockerd
+#   git:
+#     repo: 'https://github.com/Mirantis/cri-dockerd.git'
+#     dest: '/tmp/cri-dockerd'
+#     version: 'master'  # Poți specifica o etichetă/tag specific dacă preferi o versiune stabilă
+
+# - name: Compilează cri-dockerd din sursă
+#   become: true
+#   ansible.builtin.shell:
+#     chdir: '/tmp/cri-dockerd'
+#     cmd: |
+#       make cri-dockerd
+#   environment:
+#     GOPATH: "{{ ansible_env.HOME }}/go"
+
+# - name: Instalează cri-dockerd
+#   become: true
+#   ansible.builtin.shell:
+#     chdir: '/tmp/cri-dockerd'
+#     cmd: |
+#       make run
+
+# - name: Asigură că daemon-ul cri-dockerd este pornit
+#   become: true
+#   ansible.builtin.systemd:
+#     name: cri-docker.service
+#     state: started
+#     enabled: yes
+#     daemon_reload: yes
+
+# - name: Pornește Minikube folosind driver-ul none
+#   become: true
+#   command: minikube start --driver=none
