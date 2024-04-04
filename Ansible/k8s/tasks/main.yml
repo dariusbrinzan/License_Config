@@ -46,7 +46,7 @@
 
 - name: Adaugă utilizatorul curent în grupul docker și schimbă grupul
   ansible.builtin.shell: |
-    usermod -aG docker $USER && newgrp docker
+    usermod -aG docker $USER
   become: true
 
 - name: Pornește Minikube
