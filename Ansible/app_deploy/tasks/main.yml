@@ -65,6 +65,7 @@
   become: true
 
 - name: Rulează primul container Docker din imaginea nextjs_license
+  become: true
   community.docker.docker_container:
     name: nextjs_app1
     image: nextjs_license:latest
@@ -74,6 +75,7 @@
     restart_policy: always
 
 - name: Rulează al doilea container Docker din imaginea nextjs_license
+  become: true
   community.docker.docker_container:
     name: nextjs_app2
     image: nextjs_license:latest
