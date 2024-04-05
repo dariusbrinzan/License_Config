@@ -64,17 +64,17 @@
     state: latest
   become: true
 
-- name: Rulează Docker Compose
-  become: true
-  community.docker.docker_compose:
-    project_src: /home/ubuntu/Config/K8s
-    state: present
-  register: docker_compose_result
+# - name: Rulează Docker Compose
+#   become: true
+#   community.docker.docker_compose:
+#     project_src: /home/ubuntu/Config/K8s
+#     state: present
+#   register: docker_compose_result
 
-- name: Afișează rezultatul Docker Compose
-  become: true
-  ansible.builtin.debug:
-    var: docker_compose_result
+# - name: Afișează rezultatul Docker Compose
+#   become: true
+#   ansible.builtin.debug:
+#     var: docker_compose_result
 
 
 # - name: Desfășurare aplicație Next.js în Minikube
