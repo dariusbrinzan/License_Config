@@ -85,6 +85,7 @@
     restart_policy: always
 
 - name: Rulează containerul Nginx ca balansator de încărcare
+  become: true
   community.docker.docker_container:
     name: nginx_load_balancer
     image: nginx:latest
