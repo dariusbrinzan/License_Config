@@ -64,6 +64,23 @@
     state: latest
   become: true
 
+- name: Rulează primul container Docker din imaginea nextjs_license
+  community.docker.docker_container:
+    name: nextjs_app1
+    image: nextjs_license:latest
+    state: started
+    ports:
+      - "3001:3000"
+    restart_policy: always
+
+- name: Rulează al doilea container Docker din imaginea nextjs_license
+  community.docker.docker_container:
+    name: nextjs_app2
+    image: nextjs_license:latest
+    state: started
+    ports:
+      - "3002:3000"
+    restart_policy: always
 # - name: Rulează Docker Compose
 #   become: true
 #   community.docker.docker_compose:
