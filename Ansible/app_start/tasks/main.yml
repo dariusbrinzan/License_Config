@@ -38,6 +38,7 @@
 
 - name: Check versions of Node.js and NPM
   ansible.builtin.command: "{{ item }}"
+  become: true
   register: version_output
   loop:
     - 'node -v'
@@ -45,6 +46,7 @@
   ignore_errors: yes
 
 - name: Display versions of Node.js and NPM
+  become: true
   ansible.builtin.debug:
     msg: "{{ item.stdout }}"
   with_items: "{{ version_output.results }}"
