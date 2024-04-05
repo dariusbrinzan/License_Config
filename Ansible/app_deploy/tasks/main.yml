@@ -46,30 +46,23 @@
     name: docker
     state: present
 
-- name: Instalează Docker Compose
-  become: true
-  ansible.builtin.get_url:
-    url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
-    dest: /usr/local/bin/docker-compose
-    mode: '0755'
-
-- name: Instalează Docker Compose cu pip
-  become: true
-  ansible.builtin.pip:
-    name: docker-compose
-    state: present
-
 - name: Actualizează biblioteca Docker pentru Python
-  become: true
   ansible.builtin.pip:
     name: docker
     state: latest
-
-- name: Actualizează Docker Compose cu pip
   become: true
+
+- name: Dezinstalează docker-compose vechi
+  ansible.builtin.pip:
+    name: docker-compose
+    state: absent
+  become: true
+
+- name: Instalează cea mai recentă versiune de Docker Compose
   ansible.builtin.pip:
     name: docker-compose
     state: latest
+  become: true
 
 - name: Rulează Docker Compose
   become: true
