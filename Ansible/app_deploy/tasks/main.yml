@@ -64,22 +64,32 @@
     state: latest
   become: true
 
-- name: Rulează primul container Docker din imaginea nextjs_license
+- name: Creează o rețea Docker pentru containere
+  become: true
+  community.docker.docker_network:
+    name: myapp_network
+    state: present
+
+- name: Rulează primul container Docker din imaginea nextjs_license pe rețeaua Docker
   become: true
   community.docker.docker_container:
     name: nextjs_app1
     image: nextjs_license:latest
     state: started
+    networks:
+      - name: myapp_network
     ports:
       - "3001:3000"
     restart_policy: always
 
-- name: Rulează al doilea container Docker din imaginea nextjs_license
+- name: Rulează al doilea container Docker din imaginea nextjs_license pe rețeaua Docker
   become: true
   community.docker.docker_container:
     name: nextjs_app2
     image: nextjs_license:latest
     state: started
+    networks:
+      - name: myapp_network
     ports:
       - "3002:3000"
     restart_policy: always
