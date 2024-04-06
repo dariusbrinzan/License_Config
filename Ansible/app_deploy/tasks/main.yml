@@ -79,7 +79,7 @@
     networks:
       - name: myapp_network
     ports:
-      - "3000:3000"
+      - "3001:3000"
     restart_policy: always
 
 - name: Rulează al doilea container Docker din imaginea nextjs_license pe rețeaua Docker
