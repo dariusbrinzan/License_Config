@@ -100,6 +100,8 @@
     name: nginx_load_balancer
     image: nginx:latest
     state: started
+    networks:
+      - name: myapp_network
     ports:
       - "3003:3000"
     volumes:
