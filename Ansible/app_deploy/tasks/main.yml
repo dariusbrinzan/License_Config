@@ -103,7 +103,7 @@
     networks:
       - name: nextjs_network
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - "/home/ubuntu/Config/K8s/nginx.conf:/etc/nginx/nginx.conf"
     restart_policy: always
