@@ -70,6 +70,11 @@
     name: nextjs_network
     state: present
 
+- name: Install community.docker collection
+  ansible.builtin.ansible_galaxy_collection:
+    name: community.docker
+    state: present
+
 - name: Rulează primul container Docker din imaginea nextjs_license pe rețeaua Docker
   become: true
   community.docker.docker_container:
@@ -109,6 +114,7 @@
     restart_policy: always
 
 - name: Reload NGINX to apply configuration
+  become: true
   community.docker.docker_exec:
     container: nginx_load_balancer
     command: nginx -s reload
