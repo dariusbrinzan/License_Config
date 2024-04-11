@@ -66,7 +66,7 @@ pipeline {
             steps {
                 script {
                     echo "Waiting for EC2 instances to initialize..."
-                    sleep 60
+                    sleep 20
                 }
             }
         }
