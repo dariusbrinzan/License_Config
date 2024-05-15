@@ -94,6 +94,20 @@
       - "3002:3000"
     restart_policy: always
 
+- name: Rulează un container Elasticsearch
+  become: true
+  community.docker.docker_container:
+    name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+    state: started
+    networks:
+      - name: nextjs_network
+    ports:
+      - "9200:9200"
+    env:
+      discovery.type: single-node
+    restart_policy: always
+
 - name: Rulează containerul Nginx ca balansator de încărcare
   become: true
   community.docker.docker_container:
@@ -106,6 +120,19 @@
       - "8080:80"
     volumes:
       - "/home/ubuntu/Config/K8s/nginx.conf:/etc/nginx/nginx.conf"
+    restart_policy: always
+
+- name: Rulează un container Filebeat
+  become: true
+  community.docker.docker_container:
+    name: filebeat
+    image: docker.elastic.co/beats/filebeat:7.10.1
+    state: started
+    networks:
+      - name: nextjs_network
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/home/ubuntu/Config/K8s/filebeat.yml:/usr/share/filebeat/filebeat.yml"
     restart_policy: always
 
 # - name: Rulează Docker Compose
