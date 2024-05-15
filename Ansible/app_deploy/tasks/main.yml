@@ -104,6 +104,8 @@
       - name: nextjs_network
     ports:
       - "9200:9200"
+    volumes:
+      - "/home/ubuntu/Config/K8s/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     env:
       discovery.type: single-node
     restart_policy: always
