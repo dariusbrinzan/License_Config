@@ -110,6 +110,20 @@
       discovery.type: single-node
     restart_policy: always
 
+- name: Rulează un container Kibana
+  become: true
+  community.docker.docker_container:
+    name: kibana
+    image: docker.elastic.co/kibana/kibana:7.10.1
+    state: started
+    networks:
+      - name: nextjs_network
+    ports:
+      - "5601:5601"
+    env:
+      ELASTICSEARCH_URL: "http://elasticsearch:9200"
+    restart_policy: always
+
 - name: Rulează containerul Nginx ca balansator de încărcare
   become: true
   community.docker.docker_container:
