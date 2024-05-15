@@ -1,6 +1,6 @@
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
-  description = "Allow SSH, Next.js applications, NGINX, and Elasticsearch inbound traffic"
+  description = "Allow SSH, Next.js applications, NGINX, Elasticsearch, and Kibana inbound traffic"
 
   ingress {
     from_port   = 22
@@ -33,6 +33,13 @@ resource "aws_security_group" "allow_ssh" {
   ingress {
     from_port   = 9200
     to_port     = 9200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 5601
+    to_port     = 5601
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
