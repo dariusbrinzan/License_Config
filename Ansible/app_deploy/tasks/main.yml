@@ -124,6 +124,14 @@
       - "/home/ubuntu/Config/K8s/nginx.conf:/etc/nginx/nginx.conf"
     restart_policy: always
 
+- name: Setează permisiunile fișierului filebeat.yml
+  file:
+    path: /home/ubuntu/Config/K8s/filebeat.yml
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+
 - name: Rulează un container Filebeat
   become: true
   community.docker.docker_container:
@@ -134,7 +142,7 @@
       - name: nextjs_network
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/home/ubuntu/Config/K8s/filebeat.yml:/usr/share/filebeat/filebeat.yml"
+      - "/home/ubuntu/Config/filebeat.yml:/usr/share/filebeat/filebeat.yml"
     restart_policy: always
 
 # - name: Rulează Docker Compose
