@@ -156,7 +156,7 @@
       - name: nextjs_network
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/home/ubuntu/Config/filebeat.yml:/usr/share/filebeat/filebeat.yml"
+      - "/home/ubuntu/Config/K8s/filebeat.yml:/usr/share/filebeat/filebeat.yml"
     restart_policy: always
 
 # - name: Rulează Docker Compose
