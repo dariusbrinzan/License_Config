@@ -23,10 +23,22 @@
     state: present
     update_cache: yes
 
-- name: Install Docker CE
+- name: Install specific version of Docker CE
   become: true
   ansible.builtin.apt:
-    name: docker-ce
+    name: docker-ce=5:19.03.15~3-0~ubuntu-{{ ansible_distribution_release }}
+    state: present
+
+- name: Install specific version of Docker CE CLI
+  become: true
+  ansible.builtin.apt:
+    name: docker-ce-cli=5:19.03.15~3-0~ubuntu-{{ ansible_distribution_release }}
+    state: present
+
+- name: Install containerd.io
+  become: true
+  ansible.builtin.apt:
+    name: containerd.io
     state: present
 
 - name: Test docker is up and running
