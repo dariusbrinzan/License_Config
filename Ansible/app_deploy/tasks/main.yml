@@ -73,89 +73,49 @@
 
 - name: Rulează primul container Docker din imaginea nextjs_license pe rețeaua Docker
   become: true
-  community.docker.docker_container:
-    name: "nextjs_app1"
-    image: nextjs_license:latest
-    state: started
-    networks:
-      - name: nextjs_network
-    ports:
-      - "3001:3000"
-    restart_policy: always
+  ansible.builtin.command:
+    cmd: docker run -d --name nextjs_app1 --network nextjs_network -p 3001:3000 --restart always nextjs_license:latest
 
 - name: Rulează al doilea container Docker din imaginea nextjs_license pe rețeaua Docker
   become: true
-  community.docker.docker_container:
-    name: nextjs_app2
-    image: nextjs_license:latest
-    state: started
-    networks:
-      - name: nextjs_network
-    ports:
-      - "3002:3000"
-    restart_policy: always
+  ansible.builtin.command:
+    cmd: docker run -d --name nextjs_app2 --network nextjs_network -p 3002:3000 --restart always nextjs_license:latest
 
 - name: Rulează un container Elasticsearch
   become: true
-  community.docker.docker_container:
-    name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
-    state: started
-    networks:
-      - name: nextjs_network
-    ports:
-      - "9200:9200"
-    volumes:
-      - "/home/ubuntu/Config/K8s/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-    env:
-      discovery.type: single-node
-    restart_policy: always
+  ansible.builtin.command:
+    cmd: >
+      docker run -d --name elasticsearch --network nextjs_network -p 9200:9200
+      -v /home/ubuntu/Config/K8s/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      --env discovery.type=single-node --restart always docker.elastic.co/elasticsearch/elasticsearch:7.10.1
 
 - name: Rulează un container Kibana
   become: true
-  community.docker.docker_container:
-    name: kibana
-    image: docker.elastic.co/kibana/kibana:7.10.1
-    state: started
-    networks:
-      - name: nextjs_network
-    ports:
-      - "5601:5601"
-    env:
-      ELASTICSEARCH_URL: "http://elasticsearch:9200"
-    restart_policy: always
+  ansible.builtin.command:
+    cmd: >
+      docker run -d --name kibana --network nextjs_network -p 5601:5601
+      --env ELASTICSEARCH_URL=http://elasticsearch:9200 --restart always docker.elastic.co/kibana/kibana:7.10.1
 
 - name: Rulează containerul Nginx ca balansator de încărcare
   become: true
-  community.docker.docker_container:
-    name: nginx_load_balancer
-    image: nginx:latest
-    state: started
-    networks:
-      - name: nextjs_network
-    ports:
-      - "8080:80"
-    volumes:
-      - "/home/ubuntu/Config/K8s/nginx.conf:/etc/nginx/nginx.conf"
-    restart_policy: always
+  ansible.builtin.command:
+    cmd: >
+      docker run -d --name nginx_load_balancer --network nextjs_network -p 8080:80
+      -v /home/ubuntu/Config/K8s/nginx.conf:/etc/nginx/nginx.conf --restart always nginx:latest
 
 - name: Setează permisiunile fișierului filebeat.yml
-  file:
+  become: true
+  ansible.builtin.file:
     path: /home/ubuntu/Config/K8s/filebeat.yml
     owner: ubuntu
     group: ubuntu
     mode: '0644'
-  become: true
 
 - name: Rulează un container Filebeat
   become: true
-  community.docker.docker_container:
-    name: filebeat
-    image: docker.elastic.co/beats/filebeat:7.10.1
-    state: started
-    networks:
-      - name: nextjs_network
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/home/ubuntu/Config/K8s/filebeat.yml:/usr/share/filebeat/filebeat.yml"
-    restart_policy: always
+  ansible.builtin.command:
+    cmd: >
+      docker run -d --name filebeat --network nextjs_network
+      -v /var/run/docker.sock:/var/run/docker.sock
+      -v /home/ubuntu/Config/K8s/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      --restart always docker.elastic.co/beats/filebeat:7.10.1
