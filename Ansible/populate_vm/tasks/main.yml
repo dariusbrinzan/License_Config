@@ -1,4 +1,4 @@
-- name: Get Docker Packets
+- name: Update and install necessary packages
   become: true
   ansible.builtin.apt:
     update_cache: yes
@@ -10,38 +10,35 @@
       - conntrack
     state: present
 
-- name: Move key to GPG
+- name: Add Docker GPG key
   become: true
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
-- name: Add docker repo
+- name: Add Docker repository
   become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
 
+- name: Install specific version of Docker CE dependencies
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+    name:
+      - docker-ce-cli=5:20.10.17~3-0~ubuntu-{{ ansible_distribution_release }}
+      - containerd.io
+    state: present
+
 - name: Install specific version of Docker CE
   become: true
   ansible.builtin.apt:
-    name: docker-ce=5:19.03.15~3-0~ubuntu-{{ ansible_distribution_release }}
+    name: docker-ce=5:20.10.17~3-0~ubuntu-{{ ansible_distribution_release }}
     state: present
 
-- name: Install specific version of Docker CE CLI
-  become: true
-  ansible.builtin.apt:
-    name: docker-ce-cli=5:19.03.15~3-0~ubuntu-{{ ansible_distribution_release }}
-    state: present
-
-- name: Install containerd.io
-  become: true
-  ansible.builtin.apt:
-    name: containerd.io
-    state: present
-
-- name: Test docker is up and running
+- name: Ensure Docker service is running and enabled
   become: true
   ansible.builtin.service:
     name: docker
