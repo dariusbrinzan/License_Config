@@ -71,7 +71,6 @@
   args:
     creates: /var/run/docker/netns/nextjs_network
 
-
 - name: Rulează primul container Docker din imaginea nextjs_license pe rețeaua Docker
   become: true
   community.docker.docker_container:
