@@ -64,11 +64,13 @@
     state: latest
   become: true
 
-- name: Creează o rețea Docker pentru containere
+- name: Creează o rețea Docker pentru containere folosind CLI
   become: true
-  community.docker.docker_network:
-    name: nextjs_network
-    state: present
+  ansible.builtin.command:
+    cmd: docker network create nextjs_network
+  args:
+    creates: /var/run/docker/netns/nextjs_network
+
 
 - name: Rulează primul container Docker din imaginea nextjs_license pe rețeaua Docker
   become: true
