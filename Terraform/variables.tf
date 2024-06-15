@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "instance_type" {
   description = "Tipul instanței EC2"
-  default     = "t2.medium"
+  default     = "t3.large"
 }
 
 variable "ami_id" {
