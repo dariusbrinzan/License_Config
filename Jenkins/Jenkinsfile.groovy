@@ -5,8 +5,6 @@ pipeline {
     }
     environment {
         ANSIBLE_HOSTS_FILE = 'inventory/hosts.yml'
-        AWS_ACCESS_KEY_ID = ''
-        AWS_SECRET_ACCESS_KEY = ''
     }
     stages {
         stage('Checkout') {
