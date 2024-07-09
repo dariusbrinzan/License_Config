@@ -5,8 +5,8 @@ pipeline {
     }
     environment {
         ANSIBLE_HOSTS_FILE = 'inventory/hosts.yml'
-        AWS_ACCESS_KEY_ID = 'AKIAXYKJWHSHNVBLCUNO'
-        AWS_SECRET_ACCESS_KEY = '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'
+        AWS_ACCESS_KEY_ID = ''
+        AWS_SECRET_ACCESS_KEY = ''
     }
     stages {
         stage('Checkout') {
@@ -14,7 +14,7 @@ pipeline {
                 git(
                     url: 'https://github.com/dariusbrinzan/License_Config.git',
                     branch: 'master',
-                    credentialsId: '8ae6862b-0828-40ea-ab30-4c43adc486b4'
+                    credentialsId: ''
                 )
             }
         }
